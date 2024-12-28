@@ -3,7 +3,7 @@ import { Container, Typography, Button, Box, AppBar, Toolbar, IconButton } from 
 import { styled } from '@mui/system';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LoginIcon from '@mui/icons-material/Login';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const ContentBox = styled(Box)(({ theme }) => ({
   backgroundImage: `url('https://png.pngtree.com/background/20211215/original/pngtree-modern-simple-elegant-dark-blue-landing-page-website-background-picture-image_1454711.jpg')`, // Replace with your image URL
@@ -27,6 +27,10 @@ const Home = () => {
         nav('/register');
     }
 
+    const handleLog = () => {
+        nav('/login');
+    }
+
     return (
     <>
         <AppBar position="fixed" sx={{top:0,left:0,right:0}}>
@@ -37,7 +41,7 @@ const Home = () => {
             <IconButton color="inherit" sx={{ marginRight: 2 }} onClick={handleReg}>
             <AccountCircleIcon />
             </IconButton>
-            <IconButton color="inherit">
+            <IconButton color="inherit" onClick={handleLog}>
             <LoginIcon />
             </IconButton>
         </Toolbar>

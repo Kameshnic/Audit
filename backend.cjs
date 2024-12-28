@@ -21,10 +21,11 @@ const userSchema = new mong.Schema({
   
 const User = mong.model('User', userSchema);
 
-app.get('/users', async (req, res) => {
-    const { username, password } = req.query;
+app.post('/users', async (req, res) => {
+    const { username, password } = req.body;
     try {
         const user = await User.findOne({ username, password });
+        console.log(user,username,password);
         if (user) {
             res.status(200).json({ found: true });
         } else {

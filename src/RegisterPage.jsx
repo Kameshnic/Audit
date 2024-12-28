@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { TextField, Button, Container, Typography, Box } from '@mui/material';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const RegisterPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [contactInfo, setContactInfo] = useState('');
+  const nav = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,6 +21,7 @@ const RegisterPage = () => {
       });
       if (response.status === 201) {
         console.log('User registered successfully!');
+        nav('/login');
       }
     } catch (error) {
         console.log('Failed to register user. Please try again.');
