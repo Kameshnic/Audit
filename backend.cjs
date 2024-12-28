@@ -1,1 +1,2 @@
-console.log("Hi");
+require('dotenv').config();
+console.log(process.env.GREETING);
