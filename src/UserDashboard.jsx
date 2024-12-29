@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Typography, Card, CardContent, Button, Divider, List, ListItem, ListItemText } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const UserDashboard = () => {
   const [audits, setAudits] = useState([]);
   const [registeredAudits, setRegisteredAudits] = useState([]);
+  const nav = useNavigate();
   useEffect(() => {
     const fetchAudits = async () => {
       try {
@@ -23,11 +25,18 @@ const UserDashboard = () => {
     }
   };
 
+  const handleback = () => {
+    nav('/');
+  }
+
   return (
     <Box sx={{ minHeight: '91.5vh', p: 4, bgcolor: '#f9f9f9',color:'black' }}>
-      <Typography variant="h4" gutterBottom>
-        User Dashboard
-      </Typography>
+      <Box display="flex">
+        <Typography variant="h4" gutterBottom>
+          User Dashboard
+        </Typography>
+        <Button onClick={handleback}>Back</Button>
+      </Box>
       <Divider sx={{ mb: 4 }} />
 
       <Box display="flex" gap={4}>

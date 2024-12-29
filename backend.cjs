@@ -34,7 +34,6 @@ app.post('/users', async (req, res) => {
     const { username, password } = req.body;
     try {
         const user = await User.findOne({ username, password });
-        console.log(user,username,password);
         if (user) {
             res.status(200).json({ found: true });
         } else {

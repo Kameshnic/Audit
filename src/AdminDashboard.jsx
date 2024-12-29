@@ -1,9 +1,11 @@
 import React, { useState,useEffect } from 'react';
 import { Box, Typography, List, ListItem, ListItemText, TextField, Button, Divider } from '@mui/material';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const AdminDashboard = () => {
   const [audits, setAudits] = useState([]);
+  const nav = useNavigate();
   useEffect(() => {
       const fetchAudits = async () => {
         try {
@@ -57,12 +59,17 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleback = () => {
+    nav('/');
+  }
+
   return (
     <Box sx={{ minHeight: '91.5vh', p: 4, bgcolor: '#f9f9f9',margin:'-30px'}}>
-      <Box sx={{minHeight:'11.5vh',color:'black'}}>
+      <Box display='flex' sx={{minHeight:'11.5vh',color:'black'}}>
         <Typography>
           Welcome,Admin
         </Typography>
+        <Button onClick={handleback}>Back</Button>
       </Box>
       <Box display='flex' sx={{minHeight: '80vh',color:'black'}}>
       <Box sx={{ flex: 1, p: 2, bgcolor: 'white', boxShadow: 3, borderRadius: 2 }}>
