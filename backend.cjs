@@ -143,6 +143,26 @@ app.post('/insert_user', async (req, res) => {
     }
   });
 
+  app.put('/update_registration', async (req, res) => {
+    const { auditId, registrationId, status } = req.body;
+    try {
+      const audit = await Audit.findById(auditId);
+      if (!audit) {
+        return res.status(404).json({ error: 'Audit not found' });
+      }
+      const registration = audit.registrations.id(registrationId);
+      if (!registration) {
+        return res.status(404).json({ error: 'Registration not found' });
+      }
+      registration.status = status;
+      await audit.save();
+      res.status(200).json({ message: 'Registration status updated successfully' });
+    } catch (error) {
+      console.error('Error updating registration status:', error);
+      res.status(500).json({ error: 'Failed to update registration status' });
+    }
+  });
+
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });

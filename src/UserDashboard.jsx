@@ -109,7 +109,7 @@ const UserDashboard = () => {
                       circleColor = 'yellow';
                       boxColor = 'lightyellow';
                       break;
-                    case 'selected':
+                    case 'accepted':
                       circleColor = 'green';
                       boxColor = 'lightgreen';
                       break;
@@ -130,6 +130,9 @@ const UserDashboard = () => {
                       {filtered[0].status}
                     </Typography>
                   </Box>
+                  <IconButton color="primary">
+                      <ChatIcon />
+                    </IconButton>
                 </ListItem>
               );})}
             </List>
