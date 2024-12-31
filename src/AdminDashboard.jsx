@@ -22,6 +22,21 @@ const AdminDashboard = () => {
       fetchAudits();
     }, []);
 
+    useEffect(() => {
+      if (!selectedAudit) return;
+      const UpdateReg = async () => {
+        try {
+          await axios.put(`http://localhost:3000/update_reg`, {
+            auditId: selectedAudit._id,
+          });
+          console.log('Registration updated successfully.');
+        } catch (error) {
+          console.error('Error updating registration:', error);
+        }
+      };
+      UpdateReg();
+    }, [selectedAudit]);    
+
   const [newAudit, setNewAudit] = useState({
     name: '',
     location: '',
@@ -78,7 +93,6 @@ const AdminDashboard = () => {
     setRegistrations(updatedRegistrations);
   
     try {
-      console.log(selectedAudit);
       await axios.put(`http://localhost:3000/update_registration`, {
         auditId: selectedAudit._id,
         registrationId: updatedRegistrations[index]._id,
