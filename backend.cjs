@@ -125,6 +125,24 @@ app.post('/insert_user', async (req, res) => {
     }
   });  
 
+  app.get('/search_audits', async (req, res) => {
+    const { name } = req.query; 
+    try {
+        const audit = await Audit.find({ 
+          "registrations.name": name 
+      });
+        if (audit) {
+            res.status(200).json(audit);
+        } else {
+            res.status(404).json("no");
+        }
+    } 
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error fetching users' });
+    }
+  });
+
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });

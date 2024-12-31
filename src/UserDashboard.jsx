@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Card, CardContent, Button, Divider, List, ListItem, ListItemText } from '@mui/material';
+import { Box, Typography, Card, CardContent, Button, Divider, List, ListItem, ListItemText, IconButton} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import ChatIcon from '@mui/icons-material/Chat';
 
 const UserDashboard = () => {
   const [audits, setAudits] = useState([]);
@@ -10,7 +11,11 @@ const UserDashboard = () => {
     const fetchAudits = async () => {
       try {
         const response = await fetch('http://localhost:3000/audits');
+        const resp = await fetch('http://localhost:3000/search_audits?name=jithu');
         const data = await response.json();
+        const data1 = await resp.json();
+        setRegisteredAudits(data1);
+        console.log(data1);
         setAudits(data);
       } catch (error) {
         console.error('Error fetching audits:', error);
@@ -61,7 +66,7 @@ const UserDashboard = () => {
       <Divider sx={{ mb: 4 }} />
 
       <Box display="flex" gap={4}>
-        <Box sx={{ flex: 1, p: 2, bgcolor: 'white', boxShadow: 3, borderRadius: 2 }}>
+        <Box sx={{ flex: 1, p: 2, bgcolor: 'white', boxShadow: 3, borderRadius: 2, width:'1000px'}}>
           <Typography variant="h6" gutterBottom>
             Available Audits
           </Typography>
@@ -87,18 +92,46 @@ const UserDashboard = () => {
           )}
         </Box>
 
-        <Box sx={{ flex: 1, p: 2, bgcolor: 'white', boxShadow: 3, borderRadius: 2 }}>
+        <Box sx={{ flex: 1, p: 2, bgcolor: 'white', boxShadow: 3, borderRadius: 2, width:'200px' }}>
           <Typography variant="h6" gutterBottom>
             Registered Audits
           </Typography>
           <Divider sx={{ mb: 2 }} />
           {registeredAudits.length > 0 ? (
             <List>
-              {registeredAudits.map((audit, index) => (
+              {registeredAudits.map((audit, index) => {
+                  const filtered = audit.registrations.filter(
+                    (registration) => registration.name === 'jithu'
+                  );
+                  let circleColor, boxColor;
+                  switch (filtered[0].status) {
+                    case 'registered':
+                      circleColor = 'yellow';
+                      boxColor = 'lightyellow';
+                      break;
+                    case 'selected':
+                      circleColor = 'green';
+                      boxColor = 'lightgreen';
+                      break;
+                    case 'rejected':
+                      circleColor = 'red';
+                      boxColor = 'lightcoral';
+                      break;
+                    default:
+                      circleColor = 'grey';
+                      boxColor = 'lightgray';
+                  }
+                return(
                 <ListItem key={index} divider>
                   <ListItemText primary={`Name: ${audit.name}`} secondary={`Location: ${audit.location}, Time: ${audit.time}`} />
+                  <Box width={20} height={20} borderRadius="50%" bgcolor={circleColor} mr={1} />
+                  <Box width={70} height={20} border={2} borderColor={circleColor} bgcolor={boxColor} borderRadius={1} >
+                    <Typography variant="body2" color="textSecondary" align="center" sx={{ lineHeight: '20px' }} >
+                      {filtered[0].status}
+                    </Typography>
+                  </Box>
                 </ListItem>
-              ))}
+              );})}
             </List>
           ) : (
             <Typography>No registered audits.</Typography>

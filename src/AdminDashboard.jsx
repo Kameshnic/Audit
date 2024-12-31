@@ -1,5 +1,5 @@
 import React, { useState,useEffect } from 'react';
-import { Box, Typography, List, ListItem, ListItemText, TextField, Button, Divider } from '@mui/material';
+import { Box, Typography, List, ListItem, ListItemText, TextField, Button, Divider, Badge } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -70,7 +70,7 @@ const AdminDashboard = () => {
         <Typography>
           Welcome,Admin
         </Typography>
-        <Button onClick={handleback}>Back</Button>
+        <Button onClick={handleback} sx={{height:'24px'}}>Back</Button>
       </Box>
       <Box display='flex' sx={{minHeight: '80vh',color:'black'}}>
       <Box sx={{ flex: 1, p: 2, bgcolor: 'white', boxShadow: 3, borderRadius: 2 }}>
@@ -79,16 +79,17 @@ const AdminDashboard = () => {
         </Typography>
         <Divider/>
         <List>
-          {audits.map((audit, index) => (
-                <ListItem key={index} divider>
-                  <ListItemText
-                    primary={`Name: ${audit.name}`}
-                    secondary={`Location: ${audit.location}, Coordinates: (${audit.coordinates.join(
-                      ', '
-                    )}), Time: ${audit.time}`}
-                  />
-                </ListItem>
-              ))}
+        {audits.map((audit, index) => {
+          const registeredCount = audit.registrations.filter(
+            (registration) => registration.status === 'registered'
+          ).length;
+          return (
+            <ListItem key={index} divider>
+              <ListItemText primary={`Name: ${audit.name}`} secondary={`Location: ${audit.location}, Coordinates: (${audit.coordinates.join(', ')}), Time: ${audit.time}`} />
+              <Badge badgeContent={registeredCount} color="error" overlap="circular" anchorOrigin={{ vertical: 'top', horizontal: 'right',}}></Badge>
+            </ListItem>
+          );
+        })}
         </List>
       </Box>
       <Box sx={{ flex: 1, p: 4, bgcolor: 'white', boxShadow: 3, borderRadius: 2, ml: 4, }} >
