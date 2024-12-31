@@ -1,10 +1,13 @@
 import React, { useState,useEffect } from 'react';
-import { Box, Typography, List, ListItem, ListItemText, TextField, Button, Divider, Badge } from '@mui/material';
+import { Box, Typography, List, ListItem, ListItemText, TextField, Button, Divider, Badge,IconButton } from '@mui/material';
+import { CheckCircle, Cancel } from '@mui/icons-material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 const AdminDashboard = () => {
   const [audits, setAudits] = useState([]);
+  const [selectedAudit, setSelectedAudit] = useState(null);
+  const [registrations, setRegistrations] = useState([]);
   const nav = useNavigate();
   useEffect(() => {
       const fetchAudits = async () => {
@@ -64,8 +67,25 @@ const AdminDashboard = () => {
     nav('/');
   }
 
+  const handleReview = (audit) => {
+    setSelectedAudit(audit);
+    setRegistrations(audit.registrations || []);
+  };
+
+  const handleAccept = (index) => {
+    const updatedRegistrations = [...registrations];
+    updatedRegistrations[index].status = 'accepted';
+    setRegistrations(updatedRegistrations);
+  };
+
+  const handleReject = (index) => {
+    const updatedRegistrations = [...registrations];
+    updatedRegistrations[index].status = 'rejected';
+    setRegistrations(updatedRegistrations);
+  };
+
   return (
-    <Box sx={{ minHeight: '91.5vh', p: 4, bgcolor: '#f9f9f9',margin:'-30px'}}>
+    <Box sx={{ minHeight: '91.5vh', p: 4, bgcolor: '#f9f9f9',margin:'-30px',width:'1615px',marginLeft:'-200px'}}>
       <Box display='flex' sx={{minHeight:'11.5vh',color:'black'}}>
         <Typography>
           Welcome,Admin
@@ -73,7 +93,7 @@ const AdminDashboard = () => {
         <Button onClick={handleback} sx={{height:'24px'}}>Back</Button>
       </Box>
       <Box display='flex' sx={{minHeight: '80vh',color:'black'}}>
-      <Box sx={{ flex: 1, p: 2, bgcolor: 'white', boxShadow: 3, borderRadius: 2 }}>
+      <Box sx={{ flex: 1, p: 2, bgcolor: 'white', boxShadow: 3, borderRadius: 2}}>
         <Typography variant="h6" gutterBottom>
           Available Audits
         </Typography>
@@ -86,6 +106,7 @@ const AdminDashboard = () => {
           return (
             <ListItem key={index} divider>
               <ListItemText primary={`Name: ${audit.name}`} secondary={`Location: ${audit.location}, Coordinates: (${audit.coordinates.join(', ')}), Time: ${audit.time}`} />
+              <Button variant='contained' color='primary' sx={{marginRight:'30px'}} onClick={() => handleReview(audit)} >Review</Button>
               <Badge badgeContent={registeredCount} color="error" overlap="circular" anchorOrigin={{ vertical: 'top', horizontal: 'right',}}></Badge>
             </ListItem>
           );
@@ -108,6 +129,42 @@ const AdminDashboard = () => {
           </Button>
         </Box>
       </Box>
+      {selectedAudit && (
+          <Box sx={{ flex: 1, p: 4, bgcolor: 'white', boxShadow: 3, borderRadius: 2, ml: 4 }}>
+            <Typography variant="h6" gutterBottom>
+              Registrations for {selectedAudit.name}
+            </Typography>
+            <Divider sx={{ mb: 2 }} />
+            <List>
+              {registrations.map((registration, index) => (
+                <ListItem key={index} divider>
+                  <ListItemText
+                    primary={`Name: ${registration.name}`}
+                    secondary={`Status: ${registration.status}`}
+                  />
+                  <IconButton
+                    color="success"
+                    onClick={() => handleAccept(index)}
+                  >
+                    <CheckCircle />
+                  </IconButton>
+                  <IconButton
+                    color="error"
+                    onClick={() => handleReject(index)}
+                  >
+                    <Cancel />
+                  </IconButton>
+                </ListItem>
+              ))}
+            </List>
+          </Box>
+        )}
+        {!selectedAudit && <Box sx={{ flex: 1, p: 4, bgcolor: 'white', boxShadow: 3, borderRadius: 2, ml: 4 }}>
+            <Typography variant="h6" gutterBottom>
+              Registrations
+            </Typography>
+            </Box>
+            }
       </Box>
     </Box>
   );
