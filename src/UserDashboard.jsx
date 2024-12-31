@@ -19,9 +19,30 @@ const UserDashboard = () => {
     fetchAudits();
   }, []);
 
-  const handleRegister = (audit) => {
+  const handleRegister = async (audit) => {
     if (!registeredAudits.some((item) => item.name === audit.name)) {
-      setRegisteredAudits([...registeredAudits, audit]);
+      try {
+        setRegisteredAudits([...registeredAudits, audit]);
+        const response = await fetch(`http://localhost:3000/update_audit/${audit._id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ 
+            newRegistration: {name:'jithu',status:'registered',chat:[]},
+          }),
+        });
+  
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.error('Failed to update audit:', errorData.message);
+          return;
+        }
+        const updatedAudit = await response.json();
+        console.log('Audit updated successfully:', updatedAudit);
+      } catch (error) {
+        console.error('Error updating audit:', error);
+      }
     }
   };
 

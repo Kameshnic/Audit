@@ -40,6 +40,7 @@ const AdminDashboard = () => {
         location: newAudit.location,
         coordinates: [newAudit.latitude, newAudit.longitude],
         time: newAudit.time,
+        registrations: [],
       };
 
       try {

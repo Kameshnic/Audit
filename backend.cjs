@@ -25,7 +25,12 @@ const auditSchema = new mong.Schema({
   name: String,
   location: String,
   coordinates: [String],
-  time: String
+  time: String,
+  registrations: [{
+    name:String,
+    status:String,
+    chat:[String],
+  }]
 });
 
 const Audit = mong.model('Audit', auditSchema);
@@ -77,14 +82,14 @@ app.post('/insert_user', async (req, res) => {
   });
   
   app.post('/insert_audit', async (req, res) => {
-    const { name, location, coordinates, time } = req.body;
+    const { name, location, coordinates, time,registrations } = req.body;
     if (!name || !location || !coordinates || !time) {
       return res.status(400).json({ 
         message: 'Please provide all fields (name, location, coordinates, time)' 
       });
     }
     try {
-      const newAudit = new Audit({ name, location, coordinates, time });
+      const newAudit = new Audit({ name, location, coordinates, time,registrations });
       await newAudit.save();
       res.status(201).json({ 
         message: 'Audit created successfully', 
@@ -93,6 +98,30 @@ app.post('/insert_user', async (req, res) => {
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: 'Error creating audit' });
+    }
+  });
+  
+  app.put('/update_audit/:id', async (req, res) => {
+    const { id } = req.params;
+    const { newRegistration } = req.body;
+    try {
+      const audit = await Audit.findById(id);
+      if (!audit) {
+        return res.status(404).json({ 
+          message: 'Audit not found' 
+        });
+      }
+      audit.registrations.push(newRegistration);
+      const updatedAudit = await audit.save();
+      res.status(200).json({ 
+        message: 'Audit updated successfully', 
+        audit: updatedAudit 
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ 
+        message: 'Error updating audit' 
+      });
     }
   });  
 
