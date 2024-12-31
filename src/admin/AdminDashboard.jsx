@@ -8,6 +8,7 @@ const AdminDashboard = () => {
   const [audits, setAudits] = useState([]);
   const [selectedAudit, setSelectedAudit] = useState(null);
   const [registrations, setRegistrations] = useState([]);
+  const [regCount,setRegCount] = useState(0);
   const nav = useNavigate();
   useEffect(() => {
       const fetchAudits = async () => {
@@ -23,7 +24,7 @@ const AdminDashboard = () => {
     }, []);
 
     useEffect(() => {
-      if (!selectedAudit) return;
+      if (!selectedAudit || regCount<=0) return;
       const UpdateReg = async () => {
         try {
           await axios.put(`http://localhost:3000/update_reg`, {
@@ -142,6 +143,7 @@ const AdminDashboard = () => {
           const registeredCount = audit.registrations.filter(
             (registration) => registration.status === 'registered'
           ).length;
+
           return (
             <ListItem key={index} divider>
               <ListItemText primary={`Name: ${audit.name}`} secondary={`Location: ${audit.location}, Coordinates: (${audit.coordinates.join(', ')}), Time: ${audit.time}`} />

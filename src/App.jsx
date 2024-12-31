@@ -1,10 +1,10 @@
 import './App.css'
-import Home from './Home'
-import Login from './LoginPage';
-import RegisterPage from './RegisterPage'
+import Home from './common/Home'
+import Login from './common/LoginPage';
+import RegisterPage from './common/RegisterPage'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import UserDashboard from './UserDashboard';
-import AdminDashboard from './AdminDashboard';
+import UserDashboard from './user/UserDashboard';
+import AdminDashboard from './admin/AdminDashboard';
 
 function App() {
 
