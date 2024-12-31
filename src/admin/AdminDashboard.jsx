@@ -83,9 +83,10 @@ const AdminDashboard = () => {
     nav('/');
   }
 
-  const handleReview = (audit) => {
+  const handleReview = (audit,rego) => {
     setSelectedAudit(audit);
     setRegistrations(audit.registrations || []);
+    setRegCount(rego);
   };
 
   const handleAccept = async (index) => {
@@ -141,13 +142,12 @@ const AdminDashboard = () => {
         <List>
         {audits.map((audit, index) => {
           const registeredCount = audit.registrations.filter(
-            (registration) => registration.status === 'registered'
+            (registration) => registration.status === 'registered'  
           ).length;
-
           return (
             <ListItem key={index} divider>
               <ListItemText primary={`Name: ${audit.name}`} secondary={`Location: ${audit.location}, Coordinates: (${audit.coordinates.join(', ')}), Time: ${audit.time}`} />
-              <Button variant='contained' color='primary' sx={{marginRight:'30px'}} onClick={() => handleReview(audit)} >Review</Button>
+              <Button variant='contained' color='primary' sx={{marginRight:'30px'}} onClick={() => handleReview(audit,registeredCount)} >Review</Button>
               <Badge badgeContent={registeredCount} color="error" overlap="circular" anchorOrigin={{ vertical: 'top', horizontal: 'right',}}></Badge>
             </ListItem>
           );
