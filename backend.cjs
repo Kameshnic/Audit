@@ -40,7 +40,7 @@ app.post('/users', async (req, res) => {
     try {
         const user = await User.findOne({ username, password });
         if (user) {
-            res.status(200).json({ found: true });
+            res.status(200).json({ found: true, id:user._id });
         } else {
             res.status(404).json({ found: false });
         }
@@ -121,6 +121,27 @@ app.post('/insert_user', async (req, res) => {
       console.error(error);
       res.status(500).json({ 
         message: 'Error updating audit' 
+      });
+    }
+  });  
+
+  app.delete('/delete_audit/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+      const deletedAudit = await Audit.findByIdAndDelete(id);
+      if (!deletedAudit) {
+        return res.status(404).json({
+          message: 'Audit not found'
+        });
+      }
+      res.status(200).json({
+        message: 'Audit deleted successfully',
+        audit: deletedAudit
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({
+        message: 'Error deleting audit'
       });
     }
   });  

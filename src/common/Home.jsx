@@ -1,25 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-scroll';
-import { FaFacebookF, FaTwitter, FaInstagram, FaChartBar, FaClipboardCheck, FaUserTie, FaChevronRight } from 'react-icons/fa';
+import { FaFacebookF, FaTwitter, FaInstagram, FaChartBar, FaClipboardCheck, FaUserTie, FaSignInAlt } from 'react-icons/fa';
 import emailjs from 'emailjs-com';
 import { useNavigate } from 'react-router-dom';
-import { styled } from '@mui/system';
-import { Container, Typography, Button, Box, AppBar, Toolbar, IconButton } from '@mui/material';
-
-const ContentBox = styled(Box)(({ theme }) => ({
-  backgroundImage: `url('https://png.pngtree.com/background/20211215/original/pngtree-modern-simple-elegant-dark-blue-landing-page-website-background-picture-image_1454711.jpg')`, // Replace with your image URL
-  backgroundSize: 'cover',
-  backgroundPosition: 'center',
-  padding: theme.spacing(8, 2),
-  borderRadius: theme.shape.borderRadius,
-  textAlign: 'center',
-  color: '#fff',
-  position: 'absolute',
-  top: 65,
-  left: 0,
-  width: '100%',
-  height: '230px'
-}));
 
 const Home = () => {
     const nav = useNavigate();
@@ -97,7 +80,7 @@ const Home = () => {
               <FaUserTie className="h-6 w-6" />
             </button>
             <button onClick={handleLog} className="text-white hover:text-blue-200">
-              <FaChevronRight className="h-6 w-6" />
+              <FaSignInAlt className="h-6 w-6" />
             </button>
           </div>
         </div>

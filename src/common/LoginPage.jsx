@@ -20,7 +20,7 @@ const Login = () => {
                     nav('/admindash')
                 }
                 else{
-                    nav('/userdash');
+                    nav('/userdash',{ state: { auditId: response.data.id } });
                 }
             } else {
                 console.log('Invalid username or password.');

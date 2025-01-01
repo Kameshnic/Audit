@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Typography, Card, CardContent, Button, Divider, List, ListItem, ListItemText, IconButton} from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import ChatIcon from '@mui/icons-material/Chat';
 
 const UserDashboard = () => {
   const [audits, setAudits] = useState([]);
   const [registeredAudits, setRegisteredAudits] = useState([]);
   const nav = useNavigate();
+  const location = useLocation();
+  const { auditId } = location.state || {};
   useEffect(() => {
     const fetchAudits = async () => {
       try {
@@ -27,6 +29,7 @@ const UserDashboard = () => {
   const handleRegister = async (audit) => {
     if (!registeredAudits.some((item) => item.name === audit.name)) {
       try {
+        audit.registrations.push({name: 'jithu', status: 'registered', chat: []});
         setRegisteredAudits([...registeredAudits, audit]);
         const response = await fetch(`http://localhost:3000/update_audit/${audit._id}`, {
           method: 'PUT',

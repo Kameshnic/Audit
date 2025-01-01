@@ -1,5 +1,6 @@
 import React, { useState,useEffect } from 'react';
 import { Box, Typography, List, ListItem, ListItemText, TextField, Button, Divider, Badge,IconButton } from '@mui/material';
+import {FaTrash} from 'react-icons/fa'
 import { CheckCircle, Cancel } from '@mui/icons-material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -89,6 +90,15 @@ const AdminDashboard = () => {
     setRegCount(rego);
   };
 
+  const handleDelete = async (id) => {
+    try {
+      const response = await axios.delete(`http://localhost:3000/delete_audit/${id}`);
+      console.log('Audit deleted successfully', response.data);
+    } catch (error) {
+      console.error('Error deleting audit:', error);
+    }
+  };
+
   const handleAccept = async (index) => {
     const updatedRegistrations = [...registrations];
     updatedRegistrations[index].status = 'accepted';
@@ -147,7 +157,8 @@ const AdminDashboard = () => {
           return (
             <ListItem key={index} divider>
               <ListItemText primary={`Name: ${audit.name}`} secondary={`Location: ${audit.location}, Coordinates: (${audit.coordinates.join(', ')}), Time: ${audit.time}`} />
-              <Button variant='contained' color='primary' sx={{marginRight:'30px'}} onClick={() => handleReview(audit,registeredCount)} >Review</Button>
+              <FaTrash className="h-5 w-5" onClick={() => handleDelete(audit._id)}/>
+              <Button variant='contained' color='primary' sx={{marginRight:'30px',marginLeft:'20px'}} onClick={() => handleReview(audit,registeredCount)} >Review</Button>
               <Badge badgeContent={registeredCount} color="error" overlap="circular" anchorOrigin={{ vertical: 'top', horizontal: 'right',}}></Badge>
             </ListItem>
           );
