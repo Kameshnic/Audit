@@ -3,7 +3,7 @@ import { Box, Typography, List, ListItem, ListItemText, TextField, Button, Divid
 import {FaTrash} from 'react-icons/fa'
 import { CheckCircle, Cancel } from '@mui/icons-material';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const AdminDashboard = () => {
   const [audits, setAudits] = useState([]);
@@ -11,6 +11,8 @@ const AdminDashboard = () => {
   const [registrations, setRegistrations] = useState([]);
   const [regCount,setRegCount] = useState(0);
   const nav = useNavigate();
+  const location = useLocation();
+  const { auditId } = location.state || {};
   useEffect(() => {
       const fetchAudits = async () => {
         try {
@@ -60,6 +62,7 @@ const AdminDashboard = () => {
         location: newAudit.location,
         coordinates: [newAudit.latitude, newAudit.longitude],
         time: newAudit.time,
+        regstatus: "1",
         registrations: [],
       };
 
@@ -94,6 +97,16 @@ const AdminDashboard = () => {
     try {
       const response = await axios.delete(`http://localhost:3000/delete_audit/${id}`);
       console.log('Audit deleted successfully', response.data);
+    } catch (error) {
+      console.error('Error deleting audit:', error);
+    }
+  };
+
+  const handleUserDelete = async (id) => {
+    try {
+      const response = await axios.delete(`http://localhost:3000/user/${id}`);
+      console.log('User deleted successfully', response.data);
+      nav('/login');
     } catch (error) {
       console.error('Error deleting audit:', error);
     }
@@ -142,6 +155,7 @@ const AdminDashboard = () => {
           Welcome,Admin
         </Typography>
         <Button onClick={handleback} sx={{height:'24px'}}>Back</Button>
+        <Button onClick={() => handleUserDelete(auditId)} sx={{height:'24px'}}>Delete User</Button>
       </Box>
       <Box display='flex' sx={{minHeight: '80vh',color:'black'}}>
       <Box sx={{ flex: 1, p: 2, bgcolor: 'white', boxShadow: 3, borderRadius: 2}}>

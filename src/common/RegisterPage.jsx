@@ -18,6 +18,7 @@ const RegisterPage = () => {
         password:password,
         name:name,
         contact_info: contactInfo,
+        email:'kgf',
       });
       if (response.status === 201) {
         console.log('User registered successfully!');

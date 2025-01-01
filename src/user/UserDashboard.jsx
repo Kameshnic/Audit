@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Box, Typography, Card, CardContent, Button, Divider, List, ListItem, ListItemText, IconButton} from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import ChatIcon from '@mui/icons-material/Chat';
+import axios from 'axios';
 
 const UserDashboard = () => {
   const [audits, setAudits] = useState([]);
   const [registeredAudits, setRegisteredAudits] = useState([]);
+  const [user, setUser] = useState([]);
   const nav = useNavigate();
   const location = useLocation();
   const { auditId } = location.state || {};
@@ -13,11 +15,15 @@ const UserDashboard = () => {
     const fetchAudits = async () => {
       try {
         const response = await fetch('http://localhost:3000/audits');
-        const resp = await fetch('http://localhost:3000/search_audits?name=jithu');
+        const userDetailsResponse = await fetch(`http://localhost:3000/user_details`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', }, body: JSON.stringify({ id: auditId })});
+        const userDetails = await userDetailsResponse.json();
+        const resp = await fetch('http://localhost:3000/search_audits?name=${userDetails.username}');
         const data = await response.json();
         const data1 = await resp.json();
         setRegisteredAudits(data1);
-        console.log(data1);
+        setUser(userDetails);
         setAudits(data);
       } catch (error) {
         console.error('Error fetching audits:', error);
@@ -29,7 +35,7 @@ const UserDashboard = () => {
   const handleRegister = async (audit) => {
     if (!registeredAudits.some((item) => item.name === audit.name)) {
       try {
-        audit.registrations.push({name: 'jithu', status: 'registered', chat: []});
+        audit.registrations.push({name: user.username, status: 'registered', chat: []});
         setRegisteredAudits([...registeredAudits, audit]);
         const response = await fetch(`http://localhost:3000/update_audit/${audit._id}`, {
           method: 'PUT',
@@ -37,7 +43,7 @@ const UserDashboard = () => {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ 
-            newRegistration: {name:'jithu',status:'registered',chat:[]},
+            newRegistration: {name:user.username,status:'registered',chat:[]},
           }),
         });
   
@@ -54,6 +60,16 @@ const UserDashboard = () => {
     }
   };
 
+  const handleDelete = async (id) => {
+    try {
+      const response = await axios.delete(`http://localhost:3000/user/${id}`);
+      console.log('User deleted successfully', response.data);
+      nav('/login');
+    } catch (error) {
+      console.error('Error deleting audit:', error);
+    }
+  };
+
   const handleback = () => {
     nav('/');
   }
@@ -62,9 +78,10 @@ const UserDashboard = () => {
     <Box sx={{ minHeight: '91.5vh', p: 4, bgcolor: '#f9f9f9',color:'black' }}>
       <Box display="flex">
         <Typography variant="h4" gutterBottom>
-          User Dashboard
+          Welcome, {user.username}
         </Typography>
         <Button onClick={handleback}>Back</Button>
+        <Button onClick={() => handleDelete(user._id)}>Delete User</Button>
       </Box>
       <Divider sx={{ mb: 4 }} />
 
@@ -104,7 +121,7 @@ const UserDashboard = () => {
             <List>
               {registeredAudits.map((audit, index) => {
                   const filtered = audit.registrations.filter(
-                    (registration) => registration.name === 'jithu'
+                    (registration) => registration.name === user.username
                   );
                   let circleColor, boxColor;
                   switch (filtered[0].status) {

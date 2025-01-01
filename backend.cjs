@@ -16,9 +16,10 @@ const userSchema = new mong.Schema({
     username: String,
     password: String,
     name: String,
-    contact_info: String
+    contact_info: String,
+    email:String
   });
-  
+
 const User = mong.model('User', userSchema);
 
 const auditSchema = new mong.Schema({
@@ -26,6 +27,7 @@ const auditSchema = new mong.Schema({
   location: String,
   coordinates: [String],
   time: String,
+  regstatus: String,
   registrations: [{
     name:String,
     status:String,
@@ -51,6 +53,52 @@ app.post('/users', async (req, res) => {
     }
 });
 
+app.post('/user_details', async (req, res) => {
+  const { id } = req.body;
+  try {
+      const user = await User.findById(id);
+      if (user) {
+          res.status(200).json(user);
+      } else {
+          res.status(404).send();
+      }
+  } 
+  catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Error fetching user' });
+  }
+});
+
+app.delete('/user/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+      const user = await User.findByIdAndDelete(id);
+      if (user) {
+          res.status(200).json({ message: 'Audit deleted successfully' });
+      } else {
+          res.status(404).json({ message: 'Audit not found' });
+      }
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Error deleting audit' });
+  }
+});
+
+app.post('/insert_user', async (req, res) => {
+  const { username, password, name, contact_info } = req.body;
+  if (!username || !password || !name || !contact_info) {
+    return res.status(400).json({ message: 'Please provide all fields (username, password, name, contact_info)' });
+  }
+  try {
+    const newUser = new User({ username, password, name, contact_info });
+    await newUser.save();
+    res.status(201).json({ message: 'User created successfully', user: newUser });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error creating user' });
+  }
+});
+
 app.get('/audits', async (req, res) => {
   try {
       const audit = await Audit.find();
@@ -65,21 +113,6 @@ app.get('/audits', async (req, res) => {
       res.status(500).json({ message: 'Error fetching users' });
   }
 });
-
-app.post('/insert_user', async (req, res) => {
-    const { username, password, name, contact_info } = req.body;
-    if (!username || !password || !name || !contact_info) {
-      return res.status(400).json({ message: 'Please provide all fields (username, password, name, contact_info)' });
-    }
-    try {
-      const newUser = new User({ username, password, name, contact_info });
-      await newUser.save();
-      res.status(201).json({ message: 'User created successfully', user: newUser });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Error creating user' });
-    }
-  });
   
   app.post('/insert_audit', async (req, res) => {
     const { name, location, coordinates, time,registrations } = req.body;
@@ -202,6 +235,25 @@ app.post('/insert_user', async (req, res) => {
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+
+  app.delete('/audit/:auditId/registration/:registrationId', async (req, res) => {
+    const { auditId, registrationId } = req.params;
+    try {
+        const audit = await Audit.findOneAndUpdate(
+            { _id: auditId },
+            { $pull: { registrations: { _id: registrationId } } },
+            { new: true }
+        );
+        if (audit) {
+            res.status(200).json(audit);
+        } else {
+            res.status(404).json({ message: 'Audit not found' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error deleting registration' });
     }
   });
 

@@ -17,7 +17,7 @@ const Login = () => {
             if (response.data.found) {
                 console.log('Login successful!');
                 if(username=='jithu'){
-                    nav('/admindash')
+                    nav('/admindash',{ state: { auditId: response.data.id } })
                 }
                 else{
                     nav('/userdash',{ state: { auditId: response.data.id } });
