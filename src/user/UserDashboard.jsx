@@ -19,7 +19,7 @@ const UserDashboard = () => {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', }, body: JSON.stringify({ id: auditId })});
         const userDetails = await userDetailsResponse.json();
-        const resp = await fetch('http://localhost:3000/search_audits?name=${userDetails.username}');
+        const resp = await fetch(`http://localhost:3000/search_audits?name=${userDetails.username}`);
         const data = await response.json();
         const data1 = await resp.json();
         setRegisteredAudits(data1);

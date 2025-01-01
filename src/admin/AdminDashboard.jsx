@@ -1,6 +1,6 @@
 import React, { useState,useEffect } from 'react';
 import { Box, Typography, List, ListItem, ListItemText, TextField, Button, Divider, Badge,IconButton } from '@mui/material';
-import {FaTrash} from 'react-icons/fa'
+import {FaTrash,FaEye} from 'react-icons/fa'
 import { CheckCircle, Cancel } from '@mui/icons-material';
 import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -9,7 +9,9 @@ const AdminDashboard = () => {
   const [audits, setAudits] = useState([]);
   const [selectedAudit, setSelectedAudit] = useState(null);
   const [registrations, setRegistrations] = useState([]);
+  const [newChat, setNewChat] = useState("");
   const [regCount,setRegCount] = useState(0);
+  const [status, setStatus] = useState([]);
   const nav = useNavigate();
   const location = useLocation();
   const { auditId } = location.state || {};
@@ -90,6 +92,7 @@ const AdminDashboard = () => {
   const handleReview = (audit,rego) => {
     setSelectedAudit(audit);
     setRegistrations(audit.registrations || []);
+    setStatus(audit.registrations ? audit.registrations.map(() => false) : []);
     setRegCount(rego);
   };
 
@@ -148,6 +151,43 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleRegStatus = async () => {
+    try {
+      await axios.put(`http://localhost:3000/update_aureg/${selectedAudit._id}`, {
+        regstatus: selectedAudit.regstatus=='1'?'2':'1',
+      });
+      setSelectedAudit((prevAudit) => ({
+        ...prevAudit,
+        regstatus: prevAudit.regstatus === '1' ? '2' : '1',
+      }));      
+      console.log('Registration rejected successfully');
+    } catch (error) {
+      console.error('Error rejecting registration:', error);
+      alert('Failed to update registration status. Please try again.');
+    }
+  }
+
+  const handleAddChat = (registrationId) => {
+    if (newChat.trim()) {
+      setRegistrations((prev) =>
+        prev.map((registration) =>
+          registration._id === registrationId
+            ? { ...registration, chat: [...registration.chat, newChat] }
+            : registration
+        )
+      );
+      setNewChat("");
+    }
+  };
+
+  const handleView = (index) => {
+    setStatus((prevStatus) => {
+      const updatedStatus = [...prevStatus]; // Create a copy of the previous status array
+      updatedStatus[index] = !updatedStatus[index]; // Toggle the value at the specific index
+      return updatedStatus;
+    });
+  }
+
   return (
     <Box sx={{ minHeight: '91.5vh', p: 4, bgcolor: '#f9f9f9',margin:'-30px',width:'1615px',marginLeft:'-200px'}}>
       <Box display='flex' sx={{minHeight:'11.5vh',color:'black'}}>
@@ -197,13 +237,19 @@ const AdminDashboard = () => {
       </Box>
       {selectedAudit && (
           <Box sx={{ flex: 1, p: 4, bgcolor: 'white', boxShadow: 3, borderRadius: 2, ml: 4 }}>
+            <Box display='flex'>
             <Typography variant="h6" gutterBottom>
               Registrations for {selectedAudit.name}
             </Typography>
+            <Button onClick={handleRegStatus} >
+            {selectedAudit.regstatus=="1" ? "Close" : "Open"}
+          </Button>
+            </Box>
             <Divider sx={{ mb: 2 }} />
             <List>
               {registrations.map((registration, index) => (
-                <ListItem key={index} divider>
+                <div key={index}>
+                <ListItem>
                   <ListItemText
                     primary={`Name: ${registration.name}`}
                     secondary={`Status: ${registration.status}`}
@@ -220,7 +266,39 @@ const AdminDashboard = () => {
                   >
                     <Cancel />
                   </IconButton>
+                  <IconButton
+                    color="error"
+                    onClick={() => handleView(index)}
+                  >
+                    <FaEye/>
+                  </IconButton>
                 </ListItem>
+                {status[index] && (
+                  <div>
+                <div className="w-96 h-[100px] border border-gray-300 rounded-md bg-white p-4 overflow-y-scroll shadow-md mb-2">
+                {registration.chat.length > 0 ? (
+                  registration.chat.map((chat, index) => (
+                    <div
+                      key={index}
+                      className="p-2 mb-2 bg-gray-200 rounded-md text-sm text-gray-800"
+                    >
+                      {chat}
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-gray-500 text-sm">No chats available.</div>
+                )}
+                </div>
+                <div className="flex w-96 mb-2">
+                  <input type="text" value={newChat} onChange={(e) => setNewChat(e.target.value)} placeholder="Enter your message" className="flex-grow p-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  <button onClick={() => handleAddChat(registration._id)} className="p-2 bg-blue-500 text-white rounded-r-md hover:bg-blue-600" >
+                    Send
+                  </button>
+                </div>
+                </div>
+                )}
+                <Divider/>
+                </div>
               ))}
             </List>
           </Box>

@@ -85,12 +85,12 @@ app.delete('/user/:id', async (req, res) => {
 });
 
 app.post('/insert_user', async (req, res) => {
-  const { username, password, name, contact_info } = req.body;
-  if (!username || !password || !name || !contact_info) {
+  const { username, password, name, contact_info,email } = req.body;
+  if (!username || !password || !name || !contact_info || !email) {
     return res.status(400).json({ message: 'Please provide all fields (username, password, name, contact_info)' });
   }
   try {
-    const newUser = new User({ username, password, name, contact_info });
+    const newUser = new User({ username, password, name, contact_info,email });
     await newUser.save();
     res.status(201).json({ message: 'User created successfully', user: newUser });
   } catch (error) {
@@ -115,14 +115,14 @@ app.get('/audits', async (req, res) => {
 });
   
   app.post('/insert_audit', async (req, res) => {
-    const { name, location, coordinates, time,registrations } = req.body;
-    if (!name || !location || !coordinates || !time) {
+    const { name, location, coordinates, time,regstatus,registrations } = req.body;
+    if (!name || !location || !coordinates || !time || !regstatus) {
       return res.status(400).json({ 
         message: 'Please provide all fields (name, location, coordinates, time)' 
       });
     }
     try {
-      const newAudit = new Audit({ name, location, coordinates, time,registrations });
+      const newAudit = new Audit({ name, location, coordinates, time,regstatus,registrations });
       await newAudit.save();
       res.status(201).json({ 
         message: 'Audit created successfully', 
@@ -145,6 +145,30 @@ app.get('/audits', async (req, res) => {
         });
       }
       audit.registrations.push(newRegistration);
+      const updatedAudit = await audit.save();
+      res.status(200).json({ 
+        message: 'Audit updated successfully', 
+        audit: updatedAudit 
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ 
+        message: 'Error updating audit' 
+      });
+    }
+  });  
+
+  app.put('/update_aureg/:id', async (req, res) => {
+    const { id } = req.params;
+    const { regstatus } = req.body;
+    try {
+      const audit = await Audit.findById(id);
+      if (!audit) {
+        return res.status(404).json({ 
+          message: 'Audit not found' 
+        });
+      }
+      audit.regstatus = regstatus;
       const updatedAudit = await audit.save();
       res.status(200).json({ 
         message: 'Audit updated successfully', 
@@ -194,6 +218,26 @@ app.get('/audits', async (req, res) => {
     catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error fetching users' });
+    }
+  });
+
+  app.put('/update_chat', async (req, res) => {
+    const { auditId, registrationId, text } = req.body;
+    try {
+      const audit = await Audit.findById(auditId);
+      if (!audit) {
+        return res.status(404).json({ error: 'Audit not found' });
+      }
+      const registration = audit.registrations.id(registrationId);
+      if (!registration) {
+        return res.status(404).json({ error: 'Registration not found' });
+      }
+      registration.chat.push(text);
+      await audit.save();
+      res.status(200).json({ message: 'Registration status updated successfully' });
+    } catch (error) {
+      console.error('Error updating registration status:', error);
+      res.status(500).json({ error: 'Failed to update registration status' });
     }
   });
 
