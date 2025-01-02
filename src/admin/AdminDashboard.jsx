@@ -176,7 +176,7 @@ const AdminDashboard = () => {
     }
   }
 
-  const handleAddChat = (registrationId) => {
+  const handleAddChat = async (registrationId) => {
     if (newChat.trim()) {
       setRegistrations((prev) =>
         prev.map((registration) =>
@@ -185,6 +185,32 @@ const AdminDashboard = () => {
             : registration
         )
       );
+      try {
+        const text = newChat+"&*a";
+        const response = await fetch('http://localhost:3000/update_chat', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            auditId:selectedAudit._id,
+            registrationId:registrationId,
+            text:text,
+          }),
+        });
+    
+        if (response.ok) {
+          const result = await response.json();
+          console.log('Chat updated successfully:', result.message);
+        } else {
+          const errorData = await response.json();
+          console.error('Error updating chat:', errorData.error);
+          alert(`Error: ${errorData.error}`);
+        }
+      } catch (error) {
+        console.error('Error pushing chat to API:', error);
+        alert('Failed to update chat. Please try again later.');
+      }
       setNewChat("");
     }
   };
