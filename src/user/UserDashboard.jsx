@@ -3,7 +3,7 @@ import { Box, Typography, Card, CardContent, Button, Divider, List, ListItem, Li
 import { useNavigate, useLocation } from 'react-router-dom';
 import ChatIcon from '@mui/icons-material/Chat';
 import axios from 'axios';
-import { FaTrash } from 'react-icons/fa';
+import { FaTrash, FaUser } from 'react-icons/fa';
 
 const UserDashboard = () => {
   const [audits, setAudits] = useState([]);
@@ -83,6 +83,10 @@ const UserDashboard = () => {
     nav('/');
   }
 
+  const handleProf = () => {
+    nav('/profile',{ state: { user: user, dash:"user" } });
+  }
+
   const handleAddChat = async (auditId, registrationId) => {
     if (newChat.trim()) {
       setRegisteredAudits((prev) => {
@@ -159,6 +163,7 @@ const UserDashboard = () => {
         </Typography>
         <Button onClick={handleback}>Back</Button>
         <Button onClick={() => handleDelete(user._id)}>Delete User</Button>
+        <FaUser className="absolute top-7 right-7 text-4xl" onClick={handleProf} />
       </Box>
       <Divider sx={{ mb: 4 }} />
 
