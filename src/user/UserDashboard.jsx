@@ -3,6 +3,7 @@ import { Box, Typography, Card, CardContent, Button, Divider, List, ListItem, Li
 import { useNavigate, useLocation } from 'react-router-dom';
 import ChatIcon from '@mui/icons-material/Chat';
 import axios from 'axios';
+import { FaTrash } from 'react-icons/fa';
 
 const UserDashboard = () => {
   const [audits, setAudits] = useState([]);
@@ -141,6 +142,15 @@ const UserDashboard = () => {
     });
   }
 
+  const handleRegDelete = async (auditid,regid) => {
+    try {
+      const response = await axios.delete(`http://localhost:3000/audit/${auditid}/registration/${regid}`);
+      alert('Registration deleted successfully');
+    } catch (error) {
+      console.error('Error deleting audit:', error);
+    }
+  };
+
   return (
     <Box sx={{ minHeight: '91.5vh', p: 4, bgcolor: '#f9f9f9',color:'black' }}>
       <Box display="flex">
@@ -212,6 +222,7 @@ const UserDashboard = () => {
                 <div>
                 <ListItem>
                   <ListItemText primary={`Name: ${audit.name}`} secondary={`Location: ${audit.location}, Time: ${audit.time}`} />
+                  <FaTrash onClick={() => handleRegDelete(audit._id,filtered[0]._id)} className='mr-2'/>
                   <Box width={20} height={20} borderRadius="50%" bgcolor={circleColor} mr={1} />
                   <Box width={70} height={20} border={2} borderColor={circleColor} bgcolor={boxColor} borderRadius={1} >
                     <Typography variant="body2" color="textSecondary" align="center" sx={{ lineHeight: '20px' }} >
@@ -226,14 +237,22 @@ const UserDashboard = () => {
                   <div>
                 <div className="w-96 h-[100px] border border-gray-300 rounded-md bg-white p-4 overflow-y-scroll shadow-md mb-2">
                 {filtered[0].chat.length > 0 ? (
-                  filtered[0].chat.map((chat, inde) => (
-                    <div
-                      key={inde}
-                      className="p-2 mb-2 bg-gray-200 rounded-md text-sm text-gray-800"
-                    >
-                      {chat}
-                    </div>
-                  ))
+                  filtered[0].chat.map((chat, inde) => {
+                    const [message, alignment] = chat.split("&*");
+                    return (
+                      <div
+                        key={index}
+                        className={`p-2 mb-2 text-sm text-gray-800 ${
+                          alignment === "u"
+                            ? "rounded-md rounded-bl-none bg-green-200 mr-32"
+                            : alignment === "a"
+                            ? "rounded-md rounded-tr-none bg-red-200 ml-32"
+                            : "rounded-md"
+                        }`}
+                      >
+                        {message}
+                      </div>
+                    );})
                 ) : (
                   <div className="text-gray-500 text-sm">No chats available.</div>
                 )}

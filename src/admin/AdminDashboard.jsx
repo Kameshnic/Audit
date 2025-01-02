@@ -416,14 +416,22 @@ const AdminDashboard = () => {
                   <div>
                 <div className="w-96 h-[100px] border border-gray-300 rounded-md bg-white p-4 overflow-y-scroll shadow-md mb-2">
                 {registration.chat.length > 0 ? (
-                  registration.chat.map((chat, index) => (
-                    <div
-                      key={index}
-                      className="p-2 mb-2 bg-gray-200 rounded-md text-sm text-gray-800"
-                    >
-                      {chat}
-                    </div>
-                  ))
+                  registration.chat.map((chat, index) => {
+                    const [message, alignment] = chat.split("&*");
+                    return (
+                      <div
+                        key={index}
+                        className={`p-2 mb-2 text-sm text-gray-800 ${
+                          alignment === "u"
+                            ? "rounded-md rounded-bl-none bg-red-200 mr-32"
+                            : alignment === "a"
+                            ? "rounded-md rounded-tr-none bg-green-200 ml-32"
+                            : "rounded-md"
+                        }`}
+                      >
+                        {message}
+                      </div>
+                    );})
                 ) : (
                   <div className="text-gray-500 text-sm">No chats available.</div>
                 )}
