@@ -4,6 +4,8 @@ import {FaTrash,FaEye} from 'react-icons/fa'
 import { CheckCircle, Cancel } from '@mui/icons-material';
 import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { MapContainer, TileLayer, Marker, useMapEvents,useMap } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
 
 const AdminDashboard = () => {
   const [audits, setAudits] = useState([]);
@@ -12,6 +14,9 @@ const AdminDashboard = () => {
   const [newChat, setNewChat] = useState("");
   const [regCount,setRegCount] = useState(0);
   const [status, setStatus] = useState([]);
+  const [locatio, setLocatio] = useState([20.5937, 78.9629]);
+  const [suggestions, setSuggestions] = useState([]);
+  const [address, setAddress] = useState('');
   const nav = useNavigate();
   const location = useLocation();
   const { auditId } = location.state || {};
@@ -186,15 +191,89 @@ const AdminDashboard = () => {
 
   const handleView = (index) => {
     setStatus((prevStatus) => {
-      const updatedStatus = [...prevStatus]; // Create a copy of the previous status array
-      updatedStatus[index] = !updatedStatus[index]; // Toggle the value at the specific index
+      const updatedStatus = [...prevStatus];
+      updatedStatus[index] = !updatedStatus[index];
       return updatedStatus;
     });
   }
 
+  const MapClick = () => {
+    useMapEvents({
+      click(e) {
+        setLocatio([e.latlng.lat, e.latlng.lng]);
+        newAudit.latitude = e.latlng.lat;
+        newAudit.longitude = e.latlng.lng;
+      },
+    });
+    return null;
+  };
+
+  const ChangeMapCenter = ({ location }) => {
+    const map = useMap();
+    useEffect(() => {
+        map.setView(location, map.getZoom());
+    }, [location, map]);
+    return null;
+    };
+
+    useEffect(() => {
+      if (newAudit.latitude && newAudit.longitude) {
+        setLocatio([newAudit.latitude, newAudit.longitude]);
+      }
+    }, [newAudit.latitude, newAudit.longitude]);
+
+    const setSuggestion = async () => {
+      if (!address) {
+        alert("Please enter an address.");
+        return;
+      }
+  
+      try {
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(address)}&format=json`
+        );
+        const data = await response.json();
+        console.log(data);
+        if (data && data.length > 0) {
+          const { lat, lon } = data[0];
+          handleSuggestionClick(lat,lon);
+        }
+      } catch (error) {
+        console.error("Error fetching location:", error);
+        alert("An error occurred while fetching the location.");
+      }
+    };
+
+    const fetchSuggestions = async (query) => {
+      try {
+        const res = await axios.get(
+          `https://nominatim.openstreetmap.org/search?format=json&q=${query}`
+        );
+        setSuggestions(res.data);
+      } catch (error) {
+        console.error('Error fetching suggestions', error);
+      }
+    };
+  
+    const handleInputChange = (e) => {
+      setAddress(e.target.value);
+      if (e.target.value.length > 2) {
+        fetchSuggestions(e.target.value);
+      } else {
+        setSuggestions([]);
+      }
+    };
+  
+    const handleSuggestionClick = (lat, lon) => {
+      setLocatio([lat, lon]);
+      newAudit.latitude = lat;
+      newAudit.longitude = lon;
+      setSuggestions([]);
+    };
+
   return (
     <Box sx={{ minHeight: '91.5vh', p: 4, bgcolor: '#f9f9f9',margin:'-30px',width:'1615px',marginLeft:'-200px'}}>
-      <Box display='flex' sx={{minHeight:'11.5vh',color:'black'}}>
+      <Box display='flex' sx={{minHeight:'4vh',color:'black'}}>
         <Typography>
           Welcome,Admin
         </Typography>
@@ -234,6 +313,36 @@ const AdminDashboard = () => {
           <TextField label="Latitude" variant="outlined" fullWidth value={newAudit.latitude} onChange={(e) => setNewAudit({ ...newAudit, latitude: e.target.value })} sx={{ mb: 2 }} />
           <TextField label="Longitude" variant="outlined" fullWidth value={newAudit.longitude} onChange={(e) => setNewAudit({ ...newAudit, longitude: e.target.value })} sx={{ mb: 2 }} />
           <TextField label="Time" variant="outlined" fullWidth value={newAudit.time} onChange={(e) => setNewAudit({ ...newAudit, time: e.target.value })} sx={{ mb: 2 }} />
+          <div style={{display:"flex",gap:'10px'}}>
+          <TextField fullWidth label="Address" value={address} margin="normal" variant="outlined" onChange={handleInputChange} style={{marginTop:'0px'}}/>
+          <Button variant="contained" color="primary" onClick={setSuggestion} style={{ marginTop: '6px',height:'40px' }}>Locate</Button>
+          </div>
+            <ul style={{ position: 'relative', width: '300px', maxHeight: '200px', overflowY: 'auto', backgroundColor: 'white', borderRadius: '5px', zIndex: 1000, boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)', padding: '0', margin: '0', listStyleType: 'none', scrollbarWidth: 'none', }} >
+              {suggestions.map((suggestion) => (
+              <li
+                  key={suggestion.place_id}
+                  onClick={() => handleSuggestionClick(suggestion.lat, suggestion.lon)}
+                  style={{
+                  padding: '10px',
+                  cursor: 'pointer',
+                  borderBottom: '1px solid #ccc',
+                  transition: 'background-color 0.2s ease',
+                  backgroundColor: 'black',
+                  color:'white'
+                  }}
+                  onMouseEnter={(e) => (e.target.style.backgroundColor = 'gray')}
+                  onMouseLeave={(e) => (e.target.style.backgroundColor = 'black')}
+              >
+                  {suggestion.display_name}
+              </li>
+              ))}
+          </ul>
+          <MapContainer center={locatio} zoom={13} style={{ height: '250px', width: '500px',marginBottom:'10px' }}>
+            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+            <MapClick />
+            <Marker position={locatio}></Marker>
+            <ChangeMapCenter location={locatio} />
+          </MapContainer>
           <Button variant="contained" color="primary" onClick={handleAddAudit} fullWidth >
             Add Audit
           </Button>
