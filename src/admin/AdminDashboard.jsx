@@ -116,38 +116,42 @@ const AdminDashboard = () => {
   };
 
   const handleAccept = async (index) => {
-    const updatedRegistrations = [...registrations];
-    updatedRegistrations[index].status = 'accepted';
-    setRegistrations(updatedRegistrations);
-  
-    try {
-      await axios.put(`http://localhost:3000/update_registration`, {
-        auditId: selectedAudit._id,
-        registrationId: updatedRegistrations[index]._id,
-        status: 'accepted',
-      });
-      console.log('Registration accepted successfully');
-    } catch (error) {
-      console.error('Error accepting registration:', error);
-      alert('Failed to update registration status. Please try again.');
+    if(registrations.status=='rejected'||registrations.status=='accepted'){
+      const updatedRegistrations = [...registrations];
+      updatedRegistrations[index].status = 'accepted';
+      setRegistrations(updatedRegistrations);
+    
+      try {
+        await axios.put(`http://localhost:3000/update_registration`, {
+          auditId: selectedAudit._id,
+          registrationId: updatedRegistrations[index]._id,
+          status: 'accepted',
+        });
+        console.log('Registration accepted successfully');
+      } catch (error) {
+        console.error('Error accepting registration:', error);
+        alert('Failed to update registration status. Please try again.');
+      }
     }
   };
   
   const handleReject = async (index) => {
-    const updatedRegistrations = [...registrations];
-    updatedRegistrations[index].status = 'rejected';
-    setRegistrations(updatedRegistrations);
-  
-    try {
-      await axios.put(`http://localhost:3000/update_registration`, {
-        auditId: selectedAudit.id,
-        registrationId: updatedRegistrations[index].id,
-        status: 'rejected',
-      });
-      console.log('Registration rejected successfully');
-    } catch (error) {
-      console.error('Error rejecting registration:', error);
-      alert('Failed to update registration status. Please try again.');
+    if(registrations.status=='rejected'||registrations.status=='accepted'){
+      const updatedRegistrations = [...registrations];
+      updatedRegistrations[index].status = 'rejected';
+      setRegistrations(updatedRegistrations);
+    
+      try {
+        await axios.put(`http://localhost:3000/update_registration`, {
+          auditId: selectedAudit._id,
+          registrationId: updatedRegistrations[index]._id,
+          status: 'rejected',
+        });
+        console.log('Registration rejected successfully');
+      } catch (error) {
+        console.error('Error rejecting registration:', error);
+        alert('Failed to update registration status. Please try again.');
+      }
     }
   };
 

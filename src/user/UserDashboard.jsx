@@ -8,6 +8,8 @@ const UserDashboard = () => {
   const [audits, setAudits] = useState([]);
   const [registeredAudits, setRegisteredAudits] = useState([]);
   const [user, setUser] = useState([]);
+  const [newChat, setNewChat] = useState("");
+  const [status, setStatus] = useState([]);
   const nav = useNavigate();
   const location = useLocation();
   const { auditId } = location.state || {};
@@ -23,6 +25,7 @@ const UserDashboard = () => {
         const data = await response.json();
         const data1 = await resp.json();
         setRegisteredAudits(data1);
+        setStatus(registeredAudits ? registeredAudits.map(() => false) : []);
         setUser(userDetails);
         setAudits(data);
       } catch (error) {
@@ -33,30 +36,35 @@ const UserDashboard = () => {
   }, []);
 
   const handleRegister = async (audit) => {
-    if (!registeredAudits.some((item) => item.name === audit.name)) {
-      try {
-        audit.registrations.push({name: user.username, status: 'registered', chat: []});
-        setRegisteredAudits([...registeredAudits, audit]);
-        const response = await fetch(`http://localhost:3000/update_audit/${audit._id}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ 
-            newRegistration: {name:user.username,status:'registered',chat:[]},
-          }),
-        });
-  
-        if (!response.ok) {
-          const errorData = await response.json();
-          console.error('Failed to update audit:', errorData.message);
-          return;
+    if(audit.regstatus=="1"){
+      if (!registeredAudits.some((item) => item.name === audit.name)) {
+        try {
+          audit.registrations.push({name: user.username, status: 'registered', chat: []});
+          setRegisteredAudits([...registeredAudits, audit]);
+          const response = await fetch(`http://localhost:3000/update_audit/${audit._id}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 
+              newRegistration: {name:user.username,status:'registered',chat:[]},
+            }),
+          });
+    
+          if (!response.ok) {
+            const errorData = await response.json();
+            console.error('Failed to update audit:', errorData.message);
+            return;
+          }
+          const updatedAudit = await response.json();
+          console.log('Audit updated successfully:', updatedAudit);
+        } catch (error) {
+          console.error('Error updating audit:', error);
         }
-        const updatedAudit = await response.json();
-        console.log('Audit updated successfully:', updatedAudit);
-      } catch (error) {
-        console.error('Error updating audit:', error);
       }
+    }
+    else{
+      alert('registrations closed');
     }
   };
 
@@ -72,6 +80,39 @@ const UserDashboard = () => {
 
   const handleback = () => {
     nav('/');
+  }
+
+  const handleAddChat = (auditId, registrationId) => {
+    if (newChat.trim()) {
+      setRegisteredAudits((prev) => {
+        return prev.map((audit) => {
+          if (audit._id === auditId) {
+            return {
+              ...audit,
+              registrations: audit.registrations.map((registration,index) => {
+                if (index === 0) {
+                  return {
+                    ...registration,
+                    chat: [...registration.chat, newChat],
+                  };
+                }
+                return registration;
+              }),
+            };
+          }
+          return audit;
+        });
+      });
+      setNewChat("");
+    }
+  };
+
+  const handleView = (index) => {
+    setStatus((prevStatus) => {
+      const updatedStatus = [...prevStatus]; // Create a copy of the previous status array
+      updatedStatus[index] = !updatedStatus[index]; // Toggle the value at the specific index
+      return updatedStatus;
+    });
   }
 
   return (
@@ -119,6 +160,7 @@ const UserDashboard = () => {
           <Divider sx={{ mb: 2 }} />
           {registeredAudits.length > 0 ? (
             <List>
+              {console.log(registeredAudits)}
               {registeredAudits.map((audit, index) => {
                   const filtered = audit.registrations.filter(
                     (registration) => registration.name === user.username
@@ -142,7 +184,8 @@ const UserDashboard = () => {
                       boxColor = 'lightgray';
                   }
                 return(
-                <ListItem key={index} divider>
+                  <div>
+                <ListItem key={index}>
                   <ListItemText primary={`Name: ${audit.name}`} secondary={`Location: ${audit.location}, Time: ${audit.time}`} />
                   <Box width={20} height={20} borderRadius="50%" bgcolor={circleColor} mr={1} />
                   <Box width={70} height={20} border={2} borderColor={circleColor} bgcolor={boxColor} borderRadius={1} >
@@ -150,10 +193,36 @@ const UserDashboard = () => {
                       {filtered[0].status}
                     </Typography>
                   </Box>
-                  <IconButton color="primary">
+                  <IconButton color="primary" onClick={() => handleView(index)}>
                       <ChatIcon />
                     </IconButton>
                 </ListItem>
+                {status[index] && (
+                  <div>
+                <div className="w-96 h-[100px] border border-gray-300 rounded-md bg-white p-4 overflow-y-scroll shadow-md mb-2">
+                {audit.registrations[0].chat.length > 0 ? (
+                  audit.registrations[0].chat.map((chat, index) => (
+                    <div
+                      key={index}
+                      className="p-2 mb-2 bg-gray-200 rounded-md text-sm text-gray-800"
+                    >
+                      {chat}
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-gray-500 text-sm">No chats available.</div>
+                )}
+                </div>
+                <div className="flex w-96 mb-2">
+                  <input type="text" value={newChat} onChange={(e) => setNewChat(e.target.value)} placeholder="Enter your message" className="flex-grow p-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                  <button onClick={() => handleAddChat(audit._id,0)} className="p-2 bg-blue-500 text-white rounded-r-md hover:bg-blue-600" >
+                    Send
+                  </button>
+                </div>
+                </div>
+                )}
+                <Divider/>
+                </div>
               );})}
             </List>
           ) : (
