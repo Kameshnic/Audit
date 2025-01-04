@@ -121,7 +121,7 @@ const AdminDashboard = () => {
   };
 
   const handleAccept = async (index) => {
-    if(registrations.status=='rejected'||registrations.status=='accepted'){
+    if(registrations.status!='rejected' && registrations.status!='accepted'){
       const updatedRegistrations = [...registrations];
       updatedRegistrations[index].status = 'accepted';
       setRegistrations(updatedRegistrations);
@@ -141,7 +141,7 @@ const AdminDashboard = () => {
   };
   
   const handleReject = async (index) => {
-    if(registrations.status=='rejected'||registrations.status=='accepted'){
+    if(registrations.status!='rejected' && registrations.status!='accepted'){
       const updatedRegistrations = [...registrations];
       updatedRegistrations[index].status = 'rejected';
       setRegistrations(updatedRegistrations);
