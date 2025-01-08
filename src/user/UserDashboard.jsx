@@ -156,19 +156,21 @@ const UserDashboard = () => {
   };
 
   return (
-    <Box sx={{ minHeight: '91.5vh', p: 4, bgcolor: '#f9f9f9',color:'black' }}>
-      <Box display="flex">
+    <div className="min-h-screen p-4 bg-blue-50 w-full">
+      <div className="flex items-center justify-between bg-blue-900 p-4 rounded-md text-white shadow-md mb-4">
         <Typography variant="h4" gutterBottom>
           Welcome, {user.username}
         </Typography>
-        <Button onClick={handleback}>Back</Button>
-        <Button onClick={() => handleDelete(user._id)}>Delete User</Button>
-        <FaUser className="absolute top-7 right-7 text-4xl" onClick={handleProf} />
-      </Box>
+        <div className="space-x-4 flex">
+          <Button onClick={handleback}>Back</Button>
+          <Button onClick={() => handleDelete(user._id)}>Delete User</Button>
+          <FaUser className="top-7 right-7 text-3xl" onClick={handleProf} />
+        </div>
+      </div>
       <Divider sx={{ mb: 4 }} />
 
       <Box display="flex" gap={4}>
-        <Box sx={{ flex: 1, p: 2, bgcolor: 'white', boxShadow: 3, borderRadius: 2, width:'1000px'}}>
+        <Box sx={{ flex: 1, p: 2, bgcolor: 'white', boxShadow: 3, borderRadius: 2, maxWidth:'600px'}}>
           <Typography variant="h6" gutterBottom>
             Available Audits
           </Typography>
@@ -279,7 +281,7 @@ const UserDashboard = () => {
           )}
         </Box>
       </Box>
-    </Box>
+    </div>
   );
 };
 

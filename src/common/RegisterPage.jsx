@@ -34,26 +34,42 @@ const RegisterPage = () => {
   }
 
   return (
-    <Container maxWidth="sm" sx={{ marginTop: '50px' }}>
-      <Box sx={{ padding: '20px', borderRadius: '8px', boxShadow: 2, backgroundColor: 'white' }}>
-        <div style={{display:'flex'}}>
-          <Typography variant="h4" align="center" gutterBottom sx={{color:'black'}}>
-            Register
-          </Typography>
-          <Button onClick={handleback}>Back</Button>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-lg">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-semibold text-gray-800">Register</h1>
+          <button
+            onClick={handleback}
+            className="text-blue-600 hover:text-blue-800 font-medium"
+          >
+            Back
+          </button>
         </div>
+
         <form onSubmit={handleSubmit}>
-          <TextField label="Username" variant="outlined" fullWidth margin="normal" value={username} onChange={(e) => setUsername(e.target.value)} required />
-          <TextField label="Password" variant="outlined" type="password" fullWidth margin="normal" value={password} onChange={(e) => setPassword(e.target.value)} required />
-          <TextField label="Name" variant="outlined" fullWidth margin="normal" value={name} onChange={(e) => setName(e.target.value)} required />
-          <TextField label="Contact Info" variant="outlined" fullWidth margin="normal" value={contactInfo} onChange={(e) => setContactInfo(e.target.value)} required />
-          <Button type="submit" variant="contained" color="primary" fullWidth sx={{ marginTop: '20px' }} >
+          <div className="mb-4">
+            <input id="username" type="text" value={username} onChange={(e) => setUsername(e.target.value)} required className="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Enter your username" />
+          </div>
+  
+          <div className="mb-4">
+            <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Enter your password" />
+          </div>
+  
+          <div className="mb-4">
+            <input id="name" type="text" value={name} onChange={(e) => setName(e.target.value)} required className="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Enter your full name" />
+          </div>
+  
+          <div className="mb-6">
+            <input id="contactInfo" type="text" value={contactInfo} onChange={(e) => setContactInfo(e.target.value)} required className="mt-1 p-3 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="Enter your contact information" />
+          </div>
+  
+          <button type="submit" className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200" >
             Register
-          </Button>
+          </button>
         </form>
-      </Box>
-    </Container>
-  );
+      </div>
+    </div>
+  );  
 };
 
 export default RegisterPage;

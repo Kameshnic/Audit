@@ -298,14 +298,16 @@ const AdminDashboard = () => {
     };
 
   return (
-    <Box sx={{ minHeight: '91.5vh', p: 4, bgcolor: '#f9f9f9',margin:'-30px',width:'1615px',marginLeft:'-200px'}}>
-      <Box display='flex' sx={{minHeight:'4vh',color:'black'}}>
-        <Typography>
-          Welcome,Admin
+    <div className="min-h-screen p-4 bg-blue-50 w-full">
+      <div className="flex items-center justify-between bg-blue-900 p-4 rounded-md text-white shadow-md mb-4">
+        <Typography className="text-xl font-semibold">
+          Welcome, Admin
         </Typography>
-        <Button onClick={handleback} sx={{height:'24px'}}>Back</Button>
-        <Button onClick={() => handleUserDelete(auditId)} sx={{height:'24px'}}>Delete User</Button>
-      </Box>
+        <div className="space-x-4">
+          <Button onClick={handleback} sx={{height:'24px'}} >Back</Button>
+          <Button onClick={() => handleUserDelete(auditId)} sx={{height:'24px'}}>Delete User</Button>
+        </div>
+      </div>
       <Box display='flex' sx={{minHeight: '80vh',color:'black'}}>
       <Box sx={{ flex: 1, p: 2, bgcolor: 'white', boxShadow: 3, borderRadius: 2}}>
         <Typography variant="h6" gutterBottom>
@@ -457,7 +459,7 @@ const AdminDashboard = () => {
             </Box>
             }
       </Box>
-    </Box>
+    </div>
   );
 };
 
