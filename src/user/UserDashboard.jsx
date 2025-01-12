@@ -17,12 +17,12 @@ const UserDashboard = () => {
   useEffect(() => {
     const fetchAudits = async () => {
       try {
-        const response = await fetch('http://localhost:3000/audits');
-        const userDetailsResponse = await fetch(`http://localhost:3000/user_details`, {
+        const response = await fetch('https://auditapi-qsiu.onrender.com/audits');
+        const userDetailsResponse = await fetch(`https://auditapi-qsiu.onrender.com/user_details`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', }, body: JSON.stringify({ id: auditId })});
         const userDetails = await userDetailsResponse.json();
-        const resp = await fetch(`http://localhost:3000/search_audits?name=${userDetails.username}`);
+        const resp = await fetch(`https://auditapi-qsiu.onrender.com/search_audits?name=${userDetails.username}`);
         const data = await response.json();
         const data1 = await resp.json();
         setRegisteredAudits(data1);
@@ -42,7 +42,7 @@ const UserDashboard = () => {
         try {
           audit.registrations.push({name: user.username, status: 'registered', chat: []});
           setRegisteredAudits([...registeredAudits, audit]);
-          const response = await fetch(`http://localhost:3000/update_audit/${audit._id}`, {
+          const response = await fetch(`https://auditapi-qsiu.onrender.com/update_audit/${audit._id}`, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
@@ -71,7 +71,7 @@ const UserDashboard = () => {
 
   const handleDelete = async (id) => {
     try {
-      const response = await axios.delete(`http://localhost:3000/user/${id}`);
+      const response = await axios.delete(`https://auditapi-qsiu.onrender.com/user/${id}`);
       console.log('User deleted successfully', response.data);
       nav('/login');
     } catch (error) {
@@ -110,7 +110,7 @@ const UserDashboard = () => {
       });
       try {
         const text = newChat+"&*u";
-        const response = await fetch('http://localhost:3000/update_chat', {
+        const response = await fetch('https://auditapi-qsiu.onrender.com/update_chat', {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -148,7 +148,7 @@ const UserDashboard = () => {
 
   const handleRegDelete = async (auditid,regid) => {
     try {
-      const response = await axios.delete(`http://localhost:3000/audit/${auditid}/registration/${regid}`);
+      const response = await axios.delete(`https://auditapi-qsiu.onrender.com/audit/${auditid}/registration/${regid}`);
       alert('Registration deleted successfully');
     } catch (error) {
       console.error('Error deleting audit:', error);

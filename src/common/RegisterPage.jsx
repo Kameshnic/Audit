@@ -13,7 +13,7 @@ const RegisterPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:3000/insert_user', {
+      const response = await axios.post('https://auditapi-qsiu.onrender.com/insert_user', {
         username:username,
         password:password,
         name:name,

@@ -23,7 +23,7 @@ const AdminDashboard = () => {
   useEffect(() => {
       const fetchAudits = async () => {
         try {
-          const response = await fetch('http://localhost:3000/audits');
+          const response = await fetch('https://auditapi-qsiu.onrender.com/audits');
           const data = await response.json();
           setAudits(data);
         } catch (error) {
@@ -37,7 +37,7 @@ const AdminDashboard = () => {
       if (!selectedAudit || regCount<=0) return;
       const UpdateReg = async () => {
         try {
-          await axios.put(`http://localhost:3000/update_reg`, {
+          await axios.put(`https://auditapi-qsiu.onrender.com/update_reg`, {
             auditId: selectedAudit._id,
           });
           console.log('Registration updated successfully.');
@@ -74,7 +74,7 @@ const AdminDashboard = () => {
       };
 
       try {
-        const response = await axios.post('http://localhost:3000/insert_audit', formattedAudit);
+        const response = await axios.post('https://auditapi-qsiu.onrender.com/insert_audit', formattedAudit);
         if (response.status === 201) {
           setAudits([...audits, formattedAudit]);
           setNewAudit({ name: '', location: '', longitude: '', latitude: '', time: '' });
@@ -103,7 +103,7 @@ const AdminDashboard = () => {
 
   const handleDelete = async (id) => {
     try {
-      const response = await axios.delete(`http://localhost:3000/delete_audit/${id}`);
+      const response = await axios.delete(`https://auditapi-qsiu.onrender.com/delete_audit/${id}`);
       console.log('Audit deleted successfully', response.data);
     } catch (error) {
       console.error('Error deleting audit:', error);
@@ -112,7 +112,7 @@ const AdminDashboard = () => {
 
   const handleUserDelete = async (id) => {
     try {
-      const response = await axios.delete(`http://localhost:3000/user/${id}`);
+      const response = await axios.delete(`https://auditapi-qsiu.onrender.com/user/${id}`);
       console.log('User deleted successfully', response.data);
       nav('/login');
     } catch (error) {
@@ -127,7 +127,7 @@ const AdminDashboard = () => {
       setRegistrations(updatedRegistrations);
     
       try {
-        await axios.put(`http://localhost:3000/update_registration`, {
+        await axios.put(`https://auditapi-qsiu.onrender.com/update_registration`, {
           auditId: selectedAudit._id,
           registrationId: updatedRegistrations[index]._id,
           status: 'accepted',
@@ -147,7 +147,7 @@ const AdminDashboard = () => {
       setRegistrations(updatedRegistrations);
     
       try {
-        await axios.put(`http://localhost:3000/update_registration`, {
+        await axios.put(`https://auditapi-qsiu.onrender.com/update_registration`, {
           auditId: selectedAudit._id,
           registrationId: updatedRegistrations[index]._id,
           status: 'rejected',
@@ -162,7 +162,7 @@ const AdminDashboard = () => {
 
   const handleRegStatus = async () => {
     try {
-      await axios.put(`http://localhost:3000/update_aureg/${selectedAudit._id}`, {
+      await axios.put(`https://auditapi-qsiu.onrender.com/update_aureg/${selectedAudit._id}`, {
         regstatus: selectedAudit.regstatus=='1'?'2':'1',
       });
       setSelectedAudit((prevAudit) => ({
@@ -187,7 +187,7 @@ const AdminDashboard = () => {
       );
       try {
         const text = newChat+"&*a";
-        const response = await fetch('http://localhost:3000/update_chat', {
+        const response = await fetch('https://auditapi-qsiu.onrender.com/update_chat', {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
