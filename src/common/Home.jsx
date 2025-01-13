@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-scroll';
-import { FaFacebookF, FaTwitter, FaInstagram, FaChartBar, FaClipboardCheck, FaUserTie, FaSignInAlt } from 'react-icons/fa';
+import { FaFacebookF, FaTwitter, FaInstagram, FaChartBar, FaClipboardCheck, FaUserTie, FaSignInAlt, FaBars, FaTimes } from 'react-icons/fa';
 import emailjs from 'emailjs-com';
 import { useNavigate } from 'react-router-dom';
 
@@ -46,12 +46,24 @@ const Home = () => {
         nav('/login');
     }
 
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const handleMenuToggle = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
     return (
     <div className="bg-white">
       <header className="bg-gradient-to-r from-blue-700 to-blue-900 fixed top-0 left-0 w-full z-50 shadow-md">
         <div className="max-w-7xl mx-auto flex justify-between items-center p-4">
           <h1 className="text-3xl font-bold text-white">Audit Platform</h1>
-          <nav>
+          <button
+          className="text-white text-2xl md:hidden"
+          onClick={handleMenuToggle}
+        >
+          {isMenuOpen ? <FaTimes /> : <FaBars />}
+        </button>
+          <nav className={`${ isMenuOpen ? "block" : "hidden" } md:flex md:items-center w-full md:w-auto bg-blue-800 md:bg-transparent md:static absolute top-full left-0 md:top-auto md:left-auto`}>
             <ul className="flex gap-6 text-white font-medium">
               <li>
                 <Link to="hero" smooth={true} duration={500} className="cursor-pointer hover:text-blue-200 transition">

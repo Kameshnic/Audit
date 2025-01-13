@@ -302,162 +302,112 @@ const AdminDashboard = () => {
       <div className="flex items-center justify-between bg-blue-900 p-4 rounded-md text-white shadow-md mb-4">
         <Typography className="text-xl font-semibold">
           Welcome, Admin
-        </Typography>
+          </Typography>
         <div className="space-x-4">
-          <Button onClick={handleback} sx={{height:'24px'}} >Back</Button>
-          <Button onClick={() => handleUserDelete(auditId)} sx={{height:'24px'}}>Delete User</Button>
+          <Button onClick={handleback} sx={{ height: '24px' }}>Back</Button>
+          <Button onClick={() => handleUserDelete(auditId)} sx={{ height: '24px' }}>Delete User</Button>
         </div>
       </div>
-      <Box display='flex' sx={{minHeight: '80vh',color:'black'}}>
-      <Box sx={{ flex: 1, p: 2, bgcolor: 'white', boxShadow: 3, borderRadius: 2}}>
-        <Typography variant="h6" gutterBottom>
-          Available Audits
-        </Typography>
-        <Divider/>
-        <List>
-        {audits.map((audit, index) => {
-          const registeredCount = audit.registrations.filter(
-            (registration) => registration.status === 'registered'  
-          ).length;
-          return (
-            <ListItem key={index} divider>
-              <ListItemText primary={`Name: ${audit.name}`} secondary={`Location: ${audit.location}, Coordinates: (${audit.coordinates.join(', ')}), Time: ${audit.time}`} />
-              <FaTrash className="h-5 w-5" onClick={() => handleDelete(audit._id)}/>
-              <Button variant='contained' color='primary' sx={{marginRight:'30px',marginLeft:'20px'}} onClick={() => handleReview(audit,registeredCount)} >Review</Button>
-              <Badge badgeContent={registeredCount} color="error" overlap="circular" anchorOrigin={{ vertical: 'top', horizontal: 'right',}}></Badge>
-            </ListItem>
-          );
-        })}
-        </List>
-      </Box>
-      <Box sx={{ flex: 1, p: 4, bgcolor: 'white', boxShadow: 3, borderRadius: 2, ml: 4, }} >
-        <Typography variant="h6" gutterBottom>
-          Add New Audit
-        </Typography>
-        <Divider sx={{ mb: 2 }} />
-        <Box component="form" noValidate autoComplete="off">
-          <TextField label="Audit Name" variant="outlined" fullWidth value={newAudit.name} onChange={(e) => setNewAudit({ ...newAudit, name: e.target.value })} sx={{ mb: 2 }} />
-          <TextField label="Location" variant="outlined" fullWidth value={newAudit.location} onChange={(e) => setNewAudit({ ...newAudit, location: e.target.value })} sx={{ mb: 2 }} />
-          <TextField label="Latitude" variant="outlined" fullWidth value={newAudit.latitude} onChange={(e) => setNewAudit({ ...newAudit, latitude: e.target.value })} sx={{ mb: 2 }} />
-          <TextField label="Longitude" variant="outlined" fullWidth value={newAudit.longitude} onChange={(e) => setNewAudit({ ...newAudit, longitude: e.target.value })} sx={{ mb: 2 }} />
-          <TextField label="Time" variant="outlined" fullWidth value={newAudit.time} onChange={(e) => setNewAudit({ ...newAudit, time: e.target.value })} sx={{ mb: 2 }} />
-          <div style={{display:"flex",gap:'10px'}}>
-          <TextField fullWidth label="Address" value={address} margin="normal" variant="outlined" onChange={handleInputChange} style={{marginTop:'0px'}}/>
-          <Button variant="contained" color="primary" onClick={setSuggestion} style={{ marginTop: '6px',height:'40px' }}>Locate</Button>
-          </div>
-            <ul style={{ position: 'relative', width: '300px', maxHeight: '200px', overflowY: 'auto', backgroundColor: 'white', borderRadius: '5px', zIndex: 1000, boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)', padding: '0', margin: '0', listStyleType: 'none', scrollbarWidth: 'none', }} >
-              {suggestions.map((suggestion) => (
-              <li
-                  key={suggestion.place_id}
-                  onClick={() => handleSuggestionClick(suggestion.lat, suggestion.lon)}
-                  style={{
-                  padding: '10px',
-                  cursor: 'pointer',
-                  borderBottom: '1px solid #ccc',
-                  transition: 'background-color 0.2s ease',
-                  backgroundColor: 'black',
-                  color:'white'
-                  }}
-                  onMouseEnter={(e) => (e.target.style.backgroundColor = 'gray')}
-                  onMouseLeave={(e) => (e.target.style.backgroundColor = 'black')}
-              >
-                  {suggestion.display_name}
-              </li>
-              ))}
-          </ul>
-          <MapContainer center={locatio} zoom={13} style={{ height: '250px', width: '500px',marginBottom:'10px' }}>
-            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-            <MapClick />
-            <Marker position={locatio}></Marker>
-            <ChangeMapCenter location={locatio} />
-          </MapContainer>
-          <Button variant="contained" color="primary" onClick={handleAddAudit} fullWidth >
-            Add Audit
-          </Button>
-        </Box>
-      </Box>
-      {selectedAudit && (
-          <Box sx={{ flex: 1, p: 4, bgcolor: 'white', boxShadow: 3, borderRadius: 2, ml: 4 }}>
-            <Box display='flex'>
-            <Typography variant="h6" gutterBottom>
-              Registrations for {selectedAudit.name}
+      <Box display="flex" sx={{ minHeight: '80vh', flexDirection: { xs: 'column', md: 'row' }, gap: 2, color: 'black' }}>
+        <Box sx={{ flex: 1, p: 2, bgcolor: 'white', boxShadow: 3, borderRadius: 2 }}>
+          <Typography variant="h6" gutterBottom>
+            Available Audits
             </Typography>
-            <Button onClick={handleRegStatus} >
-            {selectedAudit.regstatus=="1" ? "Close" : "Open"}
-          </Button>
+          <Divider />
+          <List>
+            {audits.map((audit, index) => {
+              const registeredCount = audit.registrations.filter((registration) => registration.status === 'registered').length;
+              return (
+                <ListItem key={index} divider>
+                  <ListItemText primary={`Name: ${audit.name}`} secondary={`Location: ${audit.location}, Coordinates: (${audit.coordinates.join(', ')}), Time: ${audit.time}`} />
+                  <FaTrash className="h-5 w-5" onClick={() => handleDelete(audit._id)} />
+                  <Button variant="contained" color="primary" sx={{ marginRight: '30px', marginLeft: '20px' }} onClick={() => handleReview(audit, registeredCount)}>Review</Button>
+                  <Badge badgeContent={registeredCount} color="error" overlap="circular" anchorOrigin={{ vertical: 'top', horizontal: 'right' }}></Badge>
+                </ListItem>
+              );
+            })}
+          </List>
+        </Box>
+        <Box sx={{ flex: 1, p: 4, bgcolor: 'white', boxShadow: 3, borderRadius: 2, ml: { xs: 0, md: 4 } }}>
+          <Typography variant="h6" gutterBottom>
+            Add New Audit
+          </Typography>
+          <Divider sx={{ mb: 2 }} />
+          <Box component="form" noValidate autoComplete="off">
+            <TextField label="Audit Name" variant="outlined" fullWidth value={newAudit.name} onChange={(e) => setNewAudit({ ...newAudit, name: e.target.value })} sx={{ mb: 2 }} />
+            <TextField label="Location" variant="outlined" fullWidth value={newAudit.location} onChange={(e) => setNewAudit({ ...newAudit, location: e.target.value })} sx={{ mb: 2 }} />
+            <TextField label="Latitude" variant="outlined" fullWidth value={newAudit.latitude} onChange={(e) => setNewAudit({ ...newAudit, latitude: e.target.value })} sx={{ mb: 2 }} />
+            <TextField label="Longitude" variant="outlined" fullWidth value={newAudit.longitude} onChange={(e) => setNewAudit({ ...newAudit, longitude: e.target.value })} sx={{ mb: 2 }} />
+            <TextField label="Time" variant="outlined" fullWidth value={newAudit.time} onChange={(e) => setNewAudit({ ...newAudit, time: e.target.value })} sx={{ mb: 2 }} />
+            <div style={{ display: "flex", gap: '10px' }}>
+              <TextField fullWidth label="Address" value={address} margin="normal" variant="outlined" onChange={handleInputChange} style={{ marginTop: '0px' }} />
+              <Button variant="contained" color="primary" onClick={setSuggestion} style={{ marginTop: '6px', height: '40px' }}>Locate</Button>
+            </div>
+            <ul style={{ position: 'relative', width: '300px', maxHeight: '200px', overflowY: 'auto', backgroundColor: 'white', borderRadius: '5px', zIndex: 1000, boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)', padding: '0', margin: '0', listStyleType: 'none', scrollbarWidth: 'none' }}>
+              {suggestions.map((suggestion) => (
+                <li key={suggestion.place_id} onClick={() => handleSuggestionClick(suggestion.lat, suggestion.lon)} style={{ padding: '10px', cursor: 'pointer', borderBottom: '1px solid #ccc', transition: 'background-color 0.2s ease', backgroundColor: 'black', color: 'white' }} onMouseEnter={(e) => (e.target.style.backgroundColor = 'gray')} onMouseLeave={(e) => (e.target.style.backgroundColor = 'black')}>
+                  {suggestion.display_name}
+                </li>
+              ))}
+            </ul>
+            <MapContainer center={locatio} zoom={13} style={{ height: '250px', width: { xs: '100%', md: '500px' }, marginBottom: '10px' }}>
+              <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+              <MapClick />
+              <Marker position={locatio}></Marker>
+              <ChangeMapCenter location={locatio} />
+            </MapContainer>
+            <Button variant="contained" color="primary" onClick={handleAddAudit} fullWidth>Add Audit</Button>
+          </Box>
+        </Box>
+        {selectedAudit && (
+          <Box sx={{ flex: 1, p: 4, bgcolor: 'white', boxShadow: 3, borderRadius: 2, ml: { xs: 0, md: 4 } }}>
+            <Box display="flex">
+              <Typography variant="h6" gutterBottom>Registrations for {selectedAudit.name}</Typography>
+              <Button onClick={handleRegStatus}>{selectedAudit.regstatus === "1" ? "Close" : "Open"}</Button>
             </Box>
             <Divider sx={{ mb: 2 }} />
             <List>
               {registrations.map((registration, index) => (
                 <div key={index}>
-                <ListItem>
-                  <ListItemText
-                    primary={`Name: ${registration.name}`}
-                    secondary={`Status: ${registration.status}`}
-                  />
-                  <IconButton
-                    color="success"
-                    onClick={() => handleAccept(index)}
-                  >
-                    <CheckCircle />
-                  </IconButton>
-                  <IconButton
-                    color="error"
-                    onClick={() => handleReject(index)}
-                  >
-                    <Cancel />
-                  </IconButton>
-                  <IconButton
-                    color="error"
-                    onClick={() => handleView(index)}
-                  >
-                    <FaEye/>
-                  </IconButton>
-                </ListItem>
-                {status[index] && (
-                  <div>
-                <div className="w-96 h-[100px] border border-gray-300 rounded-md bg-white p-4 overflow-y-scroll shadow-md mb-2">
-                {registration.chat.length > 0 ? (
-                  registration.chat.map((chat, index) => {
-                    const [message, alignment] = chat.split("&*");
-                    return (
-                      <div
-                        key={index}
-                        className={`p-2 mb-2 text-sm text-gray-800 ${
-                          alignment === "u"
-                            ? "rounded-md rounded-bl-none bg-red-200 mr-32"
-                            : alignment === "a"
-                            ? "rounded-md rounded-tr-none bg-green-200 ml-32"
-                            : "rounded-md"
-                        }`}
-                      >
-                        {message}
+                  <ListItem>
+                    <ListItemText primary={`Name: ${registration.name}`} secondary={`Status: ${registration.status}`} />
+                    <IconButton color="success" onClick={() => handleAccept(index)}><CheckCircle /></IconButton>
+                    <IconButton color="error" onClick={() => handleReject(index)}><Cancel /></IconButton>
+                    <IconButton color="error" onClick={() => handleView(index)}><FaEye /></IconButton>
+                  </ListItem>
+                  {status[index] && (
+                    <div>
+                      <div className="w-full md:w-96 h-[100px] border border-gray-300 rounded-md bg-white p-4 overflow-y-scroll shadow-md mb-2">
+                        {registration.chat.length > 0 ? (
+                          registration.chat.map((chat, inde) => {
+                            const [message, alignment] = chat.split("&*");
+                            return (
+                              <div key={inde} className={`p-2 mb-2 text-sm text-gray-800 ${alignment === "u" ? "rounded-md rounded-bl-none bg-red-200 mr-32" : alignment === "a" ? "rounded-md rounded-tr-none bg-green-200 ml-32" : "rounded-md"}`}>
+                                {message}
+                              </div>
+                            );
+                          })
+                        ) : (
+                          <div className="text-gray-500 text-sm">No chats available.</div>
+                        )}
                       </div>
-                    );})
-                ) : (
-                  <div className="text-gray-500 text-sm">No chats available.</div>
-                )}
-                </div>
-                <div className="flex w-96 mb-2">
-                  <input type="text" value={newChat} onChange={(e) => setNewChat(e.target.value)} placeholder="Enter your message" className="flex-grow p-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                  <button onClick={() => handleAddChat(registration._id)} className="p-2 bg-blue-500 text-white rounded-r-md hover:bg-blue-600" >
-                    Send
-                  </button>
-                </div>
-                </div>
-                )}
-                <Divider/>
+                      <div className="flex w-full md:w-96 mb-2">
+                        <input type="text" value={newChat} onChange={(e) => setNewChat(e.target.value)} placeholder="Enter your message" className="flex-grow p-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                        <button onClick={() => handleAddChat(registration._id)} className="p-2 bg-blue-500 text-white rounded-r-md hover:bg-blue-600">Send</button>
+                      </div>
+                    </div>
+                  )}
+                  <Divider />
                 </div>
               ))}
             </List>
           </Box>
         )}
-        {!selectedAudit && <Box sx={{ flex: 1, p: 4, bgcolor: 'white', boxShadow: 3, borderRadius: 2, ml: 4 }}>
-            <Typography variant="h6" gutterBottom>
-              Registrations
-            </Typography>
-            </Box>
-            }
+        {!selectedAudit && (
+          <Box sx={{ flex: 1, p: 4, bgcolor: 'white', boxShadow: 3, borderRadius: 2, ml: 4 }}>
+            <Typography variant="h6" gutterBottom>Registrations</Typography>
+          </Box>
+        )}
       </Box>
     </div>
   );
